@@ -31,12 +31,12 @@ if not doubleEntries.IsEmpty then
 let multiVotes =
     responses
     |> Seq.filter (fun r -> 
-           r.``My first place technical vote`` = r.``My second place technical vote``
-        || r.``My second place technical vote`` = r.``My third place technical vote``
-        || r.``My third place technical vote`` = r.``My first place technical vote``
-        || r.``My first place Business Value vote`` = r.``My second place Business Value vote``
-        || r.``My second place Business Value vote`` = r.``My third place Business Value vote``
-        || r.``My third place Business Value vote`` = r.``My first place Business Value vote``)
+           (r.``My first place technical vote`` <> "" && r.``My first place technical vote`` = r.``My second place technical vote``)
+        || (r.``My second place technical vote`` <> "" && r.``My second place technical vote`` = r.``My third place technical vote``)
+        || (r.``My third place technical vote`` <> "" && r.``My third place technical vote`` = r.``My first place technical vote``)
+        || (r.``My first place Business Value vote`` <> "" && r.``My first place Business Value vote`` = r.``My second place Business Value vote``)
+        || (r.``My second place Business Value vote`` <> "" && r.``My second place Business Value vote`` = r.``My third place Business Value vote``)
+        || (r.``My third place Business Value vote`` <> "" && r.``My third place Business Value vote`` = r.``My first place Business Value vote``))
     |> Seq.toList
 
 if not multiVotes.IsEmpty then
