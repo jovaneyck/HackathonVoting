@@ -24,10 +24,24 @@ let doubleEntries =
     |> Seq.toList
 
 if not doubleEntries.IsEmpty then
-    printfn "DOUBLE ENTRIES FOUND!"
+    printfn "Cheaters: voted twice:"
     doubleEntries 
     |> Seq.iter (fun (name, nbVotes) -> printfn "%s voted %d times" name nbVotes)
 
+let multiVotes =
+    responses
+    |> Seq.filter (fun r -> 
+           r.``My first place technical vote`` = r.``My second place technical vote``
+        || r.``My second place technical vote`` = r.``My third place technical vote``
+        || r.``My third place technical vote`` = r.``My first place technical vote``
+        || r.``My first place Business Value vote`` = r.``My second place Business Value vote``
+        || r.``My second place Business Value vote`` = r.``My third place Business Value vote``
+        || r.``My third place Business Value vote`` = r.``My first place Business Value vote``)
+    |> Seq.toList
+
+if not multiVotes.IsEmpty then
+    printfn "Cheaters: voted twice for the same team:"
+    multiVotes |> printfn "%A"
 type Category =
     | BusinessValue
     | Technical
@@ -40,14 +54,16 @@ let parse category points vote =
 
 let pointsPerCategory =
     responses
+    |> Seq.except multiVotes
+    |> Seq.filter (fun resp -> (doubleEntries |> Seq.map(fun (name, _) -> name)) |> Seq.contains resp.``Your name`` |> not)
     |> Seq.collect (fun r -> 
         [
-            r.``My #1 technical vote`` |> parse Technical pointsForFirstPlace
-            r.``My #2 technical vote`` |> parse Technical pointsForSecondPlace
-            r.``My #3 technical vote`` |> parse Technical pointsForThirdPlace
-            r.``My #1 Business Value vote`` |> parse BusinessValue pointsForFirstPlace
-            r.``My #2 Business Value vote`` |> parse BusinessValue pointsForSecondPlace
-            r.``My #3 Business Value vote`` |> parse BusinessValue pointsForThirdPlace
+            r.``My first place technical vote`` |> parse Technical pointsForFirstPlace
+            r.``My second place technical vote`` |> parse Technical pointsForSecondPlace
+            r.``My third place technical vote`` |> parse Technical pointsForThirdPlace
+            r.``My first place Business Value vote`` |> parse BusinessValue pointsForFirstPlace
+            r.``My second place Business Value vote`` |> parse BusinessValue pointsForSecondPlace
+            r.``My third place Business Value vote`` |> parse BusinessValue pointsForThirdPlace
         ])
     |> Seq.choose id
     |> Seq.groupBy (fun vote -> vote.Category)
