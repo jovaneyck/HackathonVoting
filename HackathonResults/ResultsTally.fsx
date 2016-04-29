@@ -44,8 +44,10 @@ let pointsPerCategory =
         [
             r.``My #1 technical vote`` |> parse Technical pointsForFirstPlace
             r.``My #2 technical vote`` |> parse Technical pointsForSecondPlace
-            r.``My #1 business value vote`` |> parse BusinessValue pointsForFirstPlace
-            r.``My #2 business value vote``|> parse BusinessValue pointsForSecondPlace
+            r.``My #3 technical vote`` |> parse Technical pointsForThirdPlace
+            r.``My #1 Business Value vote`` |> parse BusinessValue pointsForFirstPlace
+            r.``My #2 Business Value vote`` |> parse BusinessValue pointsForSecondPlace
+            r.``My #3 Business Value vote`` |> parse BusinessValue pointsForThirdPlace
         ])
     |> Seq.choose id
     |> Seq.groupBy (fun vote -> vote.Category)
