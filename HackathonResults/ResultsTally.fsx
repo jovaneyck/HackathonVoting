@@ -90,4 +90,6 @@ let totals =
     |> Seq.sortByDescending(fun (_,points) -> points)
 
 printfn "And the results are in..."
-printfn "%A" totals
+totals
+|> Seq.zip [1..(totals |> Seq.length)]
+|> Seq.iter (printfn "%O")
